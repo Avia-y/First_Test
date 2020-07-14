@@ -1,0 +1,6 @@
+<Host>
+<Context path="/upload/image" docBase="/upload/image" reloadable="false" ></Context >
+	<Context path="/upload/css" docBase="/upload/css" reloadable="false" ></Context >
+	<Context path="/upload/xml" docBase="/upload/xml" reloadable="false" ></Context >
+	<Context path="/upload/swf" docBase="/upload/swf" reloadable="false" ></Context >
+</Host>

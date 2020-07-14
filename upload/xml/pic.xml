@@ -1,0 +1,9 @@
+<?xml version="1.0" encoding="ISO-8859-1"?>
+
+    <image>
+        <name>3.jpg</name>
+        <src>"/image/3.jpg"</src>
+        <border>"0"</border>
+    </image>
+
+

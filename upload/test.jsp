@@ -107,6 +107,6 @@ xml+图片
     }
     document.write("</table>");
 </script>
-<embed src="<%=request.getContextPath()%>/image/helloworld.swf" type="application/x-shockwave-flash">
+<embed src="<%=request.getContextPath()%>/swf/helloworld.swf" type="application/x-shockwave-flash">
 </body>
 </html>

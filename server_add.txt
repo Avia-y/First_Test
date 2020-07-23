@@ -4,3 +4,22 @@
 	<Context path="/upload/xml" docBase="/upload/xml" reloadable="false" ></Context >
 	<Context path="/upload/swf" docBase="/upload/swf" reloadable="false" ></Context >
 </Host>
+
+
+
+//http2配置文件
+<Connector 
+	port="443" 
+	protocol="org.apache.coyote.http11.Http11AprProtocol"
+          	address="0.0.0.0"  		maxThreads="150" 
+	SSLEnabled="true"		parseBodyMethods="POST,PUT,DELETE" 
+	URIEncoding="UTF-8" 	useBodyEncodingForURI="true"
+	allowTrace="true">
+    <UpgradeProtocol className="org.apache.coyote.http2.Http2Protocol" />
+    <SSLHostConfig>
+        
+        <Certificate certificateKeyFile="conf/server.key"
+                     certificateFile="conf/test.crt"
+                     type="RSA" />
+    </SSLHostConfig>
+</Connector>

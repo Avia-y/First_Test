@@ -12,7 +12,7 @@
 <html>
 <head>
     <title>登录</title>
-    <script src="https://<%=request.getServerName() %>:<%=request.getServerPort() %>/<%=request.getContextPath() %>/js/md5.js" type='text/javascript'></script>
+    <script src="https://<%=request.getServerName() %>:<%=request.getServerPort() %>/<%=request.getContextPath() %>/md5.js" type='text/javascript'></script>
 </head>
 <body>
 <form action="<%=request.getContextPath() %>/login" method="post">

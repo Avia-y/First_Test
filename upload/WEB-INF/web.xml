@@ -78,13 +78,13 @@
     </servlet-mapping>
 
     <servlet>
-        <servlet-name>UDP_test</servlet-name>
-        <servlet-class>com.CD4356.controller.UDP_test</servlet-class>
+        <servlet-name>Register</servlet-name>
+        <servlet-class>com.CD4356.controller.Register</servlet-class>
     </servlet>
 
     <servlet-mapping>
-        <servlet-name>UDP_test</servlet-name>
-        <url-pattern>/udp</url-pattern>
+        <servlet-name>Register</servlet-name>
+        <url-pattern>/login</url-pattern>
     </servlet-mapping>
 
 

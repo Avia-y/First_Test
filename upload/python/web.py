@@ -8,6 +8,7 @@ import operator
 from functools import reduce
 
 
+# 图片对比
 def pil_image_similarity(filepath1, filepath2):
     image1 = Image.open(filepath1)
     image2 = Image.open(filepath2)
@@ -38,14 +39,17 @@ def open_url(test_url, num):
     browser.get(test_url)
     time.sleep(15)
     browser.save_screenshot('E:\web\c\c%d.png' % num)
+    # 关闭当前窗口，并定位到第一个窗口
     browser.close()
     browser.switch_to.window(handles[0])
     return
 
 
+# 打开浏览器
 browser = webdriver.Chrome()
 browser.maximize_window()
 browser.get('https://cloud.chaojidun.com/home')
+# browser.get('https://xxxx.com')
 
 # 定位到要右击的元素
 double_click = browser.find_element_by_link_text('登录')
@@ -74,6 +78,7 @@ n = 0
 # url = "https://ecs-buy4service.aliyun.com/wizard/#/prepay/cn-beijing"
 # open_url(url)
 
+# file是url列表，file2用于记录结果
 file = open(r"E:\web\url.txt", "r", encoding="utf-8")
 file2 = open(r"E:\web\res.txt", "w+", encoding="utf-8")
 
@@ -87,6 +92,7 @@ for url in f:
     fp2 = "E:\web\log\c" + str(n) + ".png"
     res = pil_image_similarity(fp1, fp2)
     print(str(res))
+    # 保存差值大于5000的图片
     if res > 5000:
         file2.write(str(n) + ':' + url)
         file2.write(str(res) + '\n')
@@ -95,6 +101,7 @@ for url in f:
         os.remove(fp1)
     n += 1
 
+# 关闭file文件
 file.close()
 file2.close()
 

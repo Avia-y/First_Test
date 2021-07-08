@@ -1,5 +1,6 @@
 # 使用前，请在E盘创建web文件夹
 # 并在web文件夹内，创建url.excel、res.txt、c\log文件夹
+# 运行完成后，结果会保存到res.txt中
 #
 import os
 
@@ -93,27 +94,42 @@ file2 = open(r"E:\web\res.txt", "w+", encoding="utf-8")
 excel = xlrd.open_workbook(r"E:\web\url.xlsx")
 # 选择表一
 sht = excel.sheets()[0]
+mod = sht.cell(1, 1).value  # 产品名称
 
 # 遍历url列表
 # for url in f:
 for n in range(1, sht.nrows):
-    url = sht.cell(n, 3).value
+    url = sht.cell(n, 3).value  # url网址
+    part = sht.cell(n, 2).value  # 产品具体项目
 
+    if sht.cell(n, 1).value != '':
+        mod = sht.cell(n, 1).value
+    logging.info("目前产品为：" + mod + "-" + part)
+    time.sleep(1)
     print(url)
+
     open_url(url, n)
+    time.sleep(1)
 
     # 对比网页图片是否异常
     fp1 = "E:\web\c\c" + str(n) + ".png"
     fp2 = "E:\web\log\c" + str(n) + ".png"
     res = pil_image_similarity(fp1, fp2)
+    # 输出差异值
     print(str(res))
+    time.sleep(1)
+
     # 当差异值大于5000时，保存截图并将结果保存到res.txt中
     if res > 5000:
-        file2.write(str(n + 1) + ': ' + url + '\n')
-        file2.write(str(res) + '\n\n')
-        file2.flush()
+        file2.write(mod + '-' + part + '\t')
         if url == 'https://www.aliyun.com/?e=1101':
-            os.remove(fp1)
+            file2.write(" web网页未登录\n")
+            logging.error("web网页未登录")
+        else:
+            file2.write(" web截图对比错误\n")
+            logging.error("web截图对比错误")
+        file2.flush()
+
     else:
         os.remove(fp1)
     # n += 1
@@ -128,12 +144,11 @@ browser.quit()
 
 # 计时结束
 time_end = time.time()
-
-# 计算时间
 t = time_end - time_start
 m = t / 60
 s = t - 60 * int(m)
 ms = s - int(s)
 # print(t, ',', int(m), ',', round(s, 2))
 print('花费总时间：', int(m), 'm', int(s), 's', int(round(ms, 2) * 100))
+logging.info("测试结束")
 

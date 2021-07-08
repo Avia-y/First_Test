@@ -109,8 +109,8 @@ for n in range(1, sht.nrows):
         file2.write(str(n + 1) + ': ' + url + '\n')
         file2.write(str(res) + '\n\n')
         file2.flush()
-    elif url == 'https://www.aliyun.com/?e=1101':
-        os.remove(fp1)
+        if url == 'https://www.aliyun.com/?e=1101':
+            os.remove(fp1)
     else:
         os.remove(fp1)
     # n += 1

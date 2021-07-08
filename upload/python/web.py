@@ -125,6 +125,8 @@ browser.quit()
 
 # 计时结束
 time_end = time.time()
+
+# 计算时间
 t = time_end - time_start
 m = t / 60
 s = t - 60 * int(m)

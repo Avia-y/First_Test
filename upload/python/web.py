@@ -49,8 +49,11 @@ def open_url(test_url, num):
     return
 
 
+logging.basicConfig(format='%(asctime)s - %(pathname)s[line:%(lineno)d] - %(levelname)s: %(message)s',
+                    level=logging.INFO)
 # 开始计时
 time_start = time.time()
+logging.info("开始测试：")
 
 browser = webdriver.Chrome()
 browser.maximize_window()
@@ -70,9 +73,11 @@ pwd.send_keys("123456zwy")
 
 login_button = browser.find_element_by_xpath("//*[@id=\"app\"]/div/div[2]/div/div[2]/div[2]/div[1]/div/button[1]")
 login_button.click()
-print('登录成功')
+# print('登录成功')
+logging.info("登录成功")
 
 time.sleep(5)
+
 
 # 点开产品与服务
 # cf = browser.find_element_by_class_name("el-menu-vertical-mine mine1 el-menu")

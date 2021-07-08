@@ -1,3 +1,6 @@
+# 使用前，请在E盘创建web文件夹
+# 并在web文件夹内，创建url.excel、res.txt、c\log文件夹
+#
 import os
 
 import xlrd

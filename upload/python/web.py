@@ -45,7 +45,7 @@ def open_url(t_browser, test_url, num):
             t_browser.switch_to.window(new_handle)
 
     t_browser.get(test_url)
-    time.sleep(15)
+    time.sleep(12)
     t_browser.save_screenshot('E:\web\c\c%d.png' % num)
     t_browser.close()
     t_browser.switch_to.window(handles[0])

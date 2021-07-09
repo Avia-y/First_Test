@@ -3,14 +3,14 @@
 # 运行完成后，结果会保存到res.txt中
 #
 import os
-
 import xlrd
-from selenium import webdriver
 import time
-from PIL import Image
 import math
 import operator
+import logging
 from functools import reduce
+from selenium import webdriver
+from PIL import Image
 
 
 # 图片对比
@@ -28,132 +28,151 @@ def pil_image_similarity(filepath1, filepath2):
 
 
 # 新窗口访问内嵌页
-def open_url(test_url, num):
-    handle = browser.current_window_handle
+def open_url(t_browser, test_url, num):
+    handle = t_browser.current_window_handle
     # 打开一个新的窗口
-    browser.execute_script('window.open()')
+    t_browser.execute_script('window.open()')
     # 获取当前所有窗口句柄（窗口A、B）
-    handles = browser.window_handles
+    handles = t_browser.window_handles
     # 对窗口进行遍历
     for new_handle in handles:
         # 筛选新打开的窗口B
         if new_handle != handle:
             # 切换到新打开的窗口B
-            browser.switch_to.window(new_handle)
+            t_browser.switch_to.window(new_handle)
 
-    browser.get(test_url)
+    t_browser.get(test_url)
     time.sleep(15)
-    browser.save_screenshot('E:\web\c\c%d.png' % num)
-    browser.close()
-    browser.switch_to.window(handles[0])
-    return
+    t_browser.save_screenshot('E:\web\c\c%d.png' % num)
+    t_browser.close()
+    t_browser.switch_to.window(handles[0])
+    return t_browser
 
 
-logging.basicConfig(format='%(asctime)s - %(pathname)s[line:%(lineno)d] - %(levelname)s: %(message)s',
-                    level=logging.INFO)
-# 开始计时
-time_start = time.time()
-logging.info("开始测试：")
-
-browser = webdriver.Chrome()
-browser.maximize_window()
-browser.get('https://cloud.chaojidun.com/home')
-
-# 定位到要右击的元素
-double_click = browser.find_element_by_link_text('登录')
-double_click.click()
-time.sleep(5)
-
-# 登录
-zh = browser.find_element_by_class_name("el-input__inner")
-zh.send_keys("15958026448")
-
-pwd = browser.find_element_by_xpath("//*[@id=\"app\"]/div/div[2]/div/div[2]/div[2]/div[1]/div/div[3]/input")
-pwd.send_keys("123456zwy")
-
-login_button = browser.find_element_by_xpath("//*[@id=\"app\"]/div/div[2]/div/div[2]/div[2]/div[1]/div/button[1]")
-login_button.click()
-# print('登录成功')
-logging.info("登录成功")
-
-time.sleep(5)
+# 清空文件夹中所有文件
+def del_pic():
+    filepath = 'E:\web\c'
+    del_list = os.listdir(filepath)
+    for f in del_list:
+        file_path = os.path.join(filepath, f)
+        os.remove(file_path)
 
 
-# 点开产品与服务
-# cf = browser.find_element_by_class_name("el-menu-vertical-mine mine1 el-menu")
-# cf = browser.find_element_by_xpath("//*[@id=\"app\"]/div/div[2]/div[1]/div/ul[1]")
-# cf.click()
+def web_test():
+    logging.basicConfig(format='%(asctime)s - %(pathname)s[line:%(lineno)d] - %(levelname)s: %(message)s',
+                        level=logging.INFO)
 
-# url = "https://ecs-buy4service.aliyun.com/wizard/#/prepay/cn-beijing"
-# open_url(url)
+    # 开始计时
+    time_start = time.time()
+    logging.info("开始测试：")
 
-# file = open(r"E:\web\test.txt", "r", encoding="utf-8")
-# file = open(r"E:\web\url.txt", "r", encoding="utf-8")
-# f = file.readlines()
-# n = 1
+    browser = webdriver.Chrome()
+    browser.maximize_window()
+    browser.get('https://cloud.chaojidun.com/home')
 
-# file2用于记录结果
-file2 = open(r"E:\web\res.txt", "w+", encoding="utf-8")
+    # 定位到要右击的元素
+    double_click = browser.find_element_by_link_text('登录')
+    double_click.click()
+    time.sleep(5)
 
-# 打开excel
-excel = xlrd.open_workbook(r"E:\web\url.xlsx")
-# 选择表一
-sht = excel.sheets()[0]
-mod = sht.cell(1, 1).value  # 产品名称
+    # 登录
+    zh = browser.find_element_by_class_name("el-input__inner")
+    zh.send_keys("15958026448")
 
-# 遍历url列表
-# for url in f:
-for n in range(1, sht.nrows):
-    url = sht.cell(n, 3).value  # url网址
-    part = sht.cell(n, 2).value  # 产品具体项目
+    pwd = browser.find_element_by_xpath("//*[@id=\"app\"]/div/div[2]/div/div[2]/div[2]/div[1]/div/div[3]/input")
+    pwd.send_keys("123456zwy")
 
-    if sht.cell(n, 1).value != '':
-        mod = sht.cell(n, 1).value
-    logging.info("目前产品为：" + mod + "-" + part)
-    time.sleep(1)
-    print(url)
+    login_button = browser.find_element_by_xpath("//*[@id=\"app\"]/div/div[2]/div/div[2]/div[2]/div[1]/div/button[1]")
+    login_button.click()
+    # print('登录成功')
+    logging.info("登录成功")
 
-    open_url(url, n)
-    time.sleep(1)
+    time.sleep(5)
 
-    # 对比网页图片是否异常
-    fp1 = "E:\web\c\c" + str(n) + ".png"
-    fp2 = "E:\web\log\c" + str(n) + ".png"
-    res = pil_image_similarity(fp1, fp2)
-    # 输出差异值
-    print(str(res))
-    time.sleep(1)
+    # 点开产品与服务
+    # cf = browser.find_element_by_class_name("el-menu-vertical-mine mine1 el-menu")
+    # cf = browser.find_element_by_xpath("//*[@id=\"app\"]/div/div[2]/div[1]/div/ul[1]")
+    # cf.click()
 
-    # 当差异值大于5000时，保存截图并将结果保存到res.txt中
-    if res > 5000:
-        file2.write(mod + '-' + part + '\t')
-        if url == 'https://www.aliyun.com/?e=1101':
-            file2.write(" web网页未登录\n")
-            logging.error("web网页未登录")
+    # url = "https://ecs-buy4service.aliyun.com/wizard/#/prepay/cn-beijing"
+    # open_url(url)
+
+    # file = open(r"E:\web\test.txt", "r", encoding="utf-8")
+    # f = file.readlines()
+    # n = 1
+
+    # file2用于记录结果
+    file2 = open(r"E:\web\res.txt", "w+", encoding="utf-8")
+    # 记录开始时间
+    file2.write("开始时间：" + time.strftime("%Y-%m-%d %H:%M:%S", time.localtime()) + "\n")
+    file2.flush()
+
+    # 打开excel
+    excel = xlrd.open_workbook(r"E:\web\url.xlsx")
+    # 选择表一
+    sht = excel.sheets()[0]
+    mod = sht.cell(1, 1).value  # 产品名称
+
+    # 清空c文件夹
+    del_pic()
+
+    # 遍历url列表
+    # for url in f:
+    for n in range(1, sht.nrows):
+        url = sht.cell(n, 3).value  # url网址
+        part = sht.cell(n, 2).value  # 产品具体项目
+
+        if sht.cell(n, 1).value != '':
+            mod = sht.cell(n, 1).value
+        logging.info("目前产品为：" + mod + "-" + part)
+        time.sleep(1)
+        print(url)
+
+        browser = open_url(browser, url, n)
+        time.sleep(1)
+
+        # 对比网页图片是否异常
+        fp1 = "E:\web\c\c" + str(n) + ".png"
+        fp2 = "E:\web\log\c" + str(n) + ".png"
+        res = pil_image_similarity(fp1, fp2)
+        # 输出差异值
+        print(str(res))
+        time.sleep(1)
+
+        # 当差异值大于5000时，保存截图并将结果保存到res.txt中
+        if res > 5000:
+            file2.write(mod + '-' + part + '\t')
+            if url == 'https://www.aliyun.com/?e=1101':
+                file2.write(" web网页未登录\n")
+                logging.error("web网页未登录")
+            else:
+                file2.write(" web截图对比错误\n")
+                logging.error("web截图对比错误")
+            file2.flush()
+
         else:
-            file2.write(" web截图对比错误\n")
-            logging.error("web截图对比错误")
-        file2.flush()
+            os.remove(fp1)
+        # n += 1
 
-    else:
-        os.remove(fp1)
-    # n += 1
+    # file.close()
 
-# file.close()
+    file2.write("结束时间：" + time.strftime("%Y-%m-%d %H:%M:%S", time.localtime()) + "\n")
+    file2.close()
 
-file2.close()
+    # 关闭浏览器
+    time.sleep(5)
+    browser.quit()
 
-# 关闭浏览器
-time.sleep(5)
-browser.quit()
+    # 计时结束
+    time_end = time.time()
+    t = time_end - time_start
+    m = t / 60
+    s = t - 60 * int(m)
+    ms = s - int(s)
+    # print(t, ',', int(m), ',', round(s, 2))
+    print('花费总时间：', int(m), 'm', int(s), 's', int(round(ms, 2) * 100))
+    logging.info("测试结束")
 
-# 计时结束
-time_end = time.time()
-t = time_end - time_start
-m = t / 60
-s = t - 60 * int(m)
-ms = s - int(s)
-# print(t, ',', int(m), ',', round(s, 2))
-print('花费总时间：', int(m), 'm', int(s), 's', int(round(ms, 2) * 100))
-logging.info("测试结束")
 
+if __name__ == '__main__':
+    web_test()

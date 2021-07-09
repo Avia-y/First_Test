@@ -3,6 +3,7 @@
 # 运行完成后，结果会保存到res.txt中
 #
 import os
+import shutil
 import sys
 
 import xlrd
@@ -52,8 +53,7 @@ def open_url(t_browser, test_url, num):
 
 
 # 清空文件夹中所有文件
-def del_pic():
-    filepath = 'E:\web\c'
+def del_pic(filepath):
     del_list = os.listdir(filepath)
     for f in del_list:
         file_path = os.path.join(filepath, f)
@@ -82,13 +82,57 @@ def login(login_bro):
     f1 = 'E:\web\c\c0.png'
     f2 = 'E:\web\log\c0.png'
     login_bro.save_screenshot(f1)
-    r = pil_image_similarity(f1, f2)
-    # print('登录成功')
-    if r < 5000:
-        logging.info("登录成功")
+    if os.path.exists(f2) is True:
+        r = pil_image_similarity(f1, f2)
+        # print('登录成功')
+        if r < 5000:
+            logging.info("登录成功")
+        else:
+            logging.error("登录失败")
+            sys.exit(0)
     else:
-        logging.error("登录失败")
-        sys.exit(0)
+        shutil.copy(f1,f2)
+
+
+# 第一次获取log
+def first_time(f_brow):
+    logging.info("开始第一次循环，获取log")
+    src = 'E:\web\log'
+    port = 'E:\web\c'
+    # 截图登录成功页
+    f_brow.save_screenshot(port+'\c0.png')
+    # 打开excel
+    excel = xlrd.open_workbook(r"E:\web\url.xlsx")
+    # 选择表一
+    sht = excel.sheets()[0]
+    mod = sht.cell(1, 1).value  # 产品名称
+
+    # 遍历获取截图
+    for n in range(1, sht.nrows):
+        url = sht.cell(n, 3).value  # url网址
+        part = sht.cell(n, 2).value  # 产品具体项目
+
+        if sht.cell(n, 1).value != '':
+            mod = sht.cell(n, 1).value
+        logging.info("目前产品为：" + mod + "-" + part)
+        time.sleep(1)
+        print(url)
+
+        f_brow = open_url(f_brow, url, n)
+        time.sleep(1)
+
+    # 清空log文件夹
+    del_pic(src)
+
+    # 复制截图到log文件夹
+    src_files = os.listdir(port)
+    for file_name in src_files:
+        full_file_name = os.path.join(port, file_name)
+        if os.path.isfile(full_file_name):
+            shutil.copy(full_file_name, src)
+
+    # 清空c文件夹
+    del_pic('E:\web\c')
 
 
 def web_test():
@@ -132,45 +176,49 @@ def web_test():
     mod = sht.cell(1, 1).value  # 产品名称
 
     # 清空c文件夹
-    del_pic()
+    del_pic('E:\web\c')
 
-    # 遍历url列表
-    # for url in f:
-    for n in range(1, sht.nrows):
-        url = sht.cell(n, 3).value  # url网址
-        part = sht.cell(n, 2).value  # 产品具体项目
+    times = int(input('请输入循环次数（0为获取log图片）：'))
+    if times == 0:
+        first_time(browser)
 
-        if sht.cell(n, 1).value != '':
-            mod = sht.cell(n, 1).value
-        logging.info("目前产品为：" + mod + "-" + part)
-        time.sleep(1)
-        print(url)
+    for t in range(times):
+        # 遍历url列表
+        # for url in f:
+        for n in range(1, sht.nrows):
+            url = sht.cell(n, 3).value  # url网址
+            part = sht.cell(n, 2).value  # 产品具体项目
 
-        browser = open_url(browser, url, n)
-        time.sleep(1)
+            if sht.cell(n, 1).value != '':
+                mod = sht.cell(n, 1).value
+            logging.info("目前产品为：" + mod + "-" + part)
+            time.sleep(1)
+            print(url)
 
-        # 对比网页图片是否异常
-        fp1 = "E:\web\c\c" + str(n) + ".png"
-        fp2 = "E:\web\log\c" + str(n) + ".png"
-        res = pil_image_similarity(fp1, fp2)
-        # 输出差异值
-        print(str(res))
-        time.sleep(1)
+            browser = open_url(browser, url, n)
+            time.sleep(1)
 
-        # 当差异值大于5000时，保存截图并将结果保存到res.txt中
-        if res > 5000:
-            file2.write(mod + '-' + part + '\t')
-            if url == 'https://www.aliyun.com/?e=1101':
-                file2.write(" web网页未登录\n")
-                logging.error("web网页未登录")
+            # 对比网页图片是否异常
+            fp1 = "E:\web\c\c" + str(n) + ".png"
+            fp2 = "E:\web\log\c" + str(n) + ".png"
+            res = pil_image_similarity(fp1, fp2)
+            # 输出差异值
+            print(str(res))
+            time.sleep(1)
+
+            # 当差异值大于5000时，保存截图并将结果保存到res.txt中
+            if res > 5000:
+                file2.write(mod + '-' + part + '\t')
+                if url == 'https://www.aliyun.com/?e=1101':
+                    file2.write(" web网页未登录\n")
+                    logging.error("web网页未登录")
+                else:
+                    file2.write(" web截图对比错误\n")
+                    logging.error("web截图对比错误")
+                file2.flush()
             else:
-                file2.write(" web截图对比错误\n")
-                logging.error("web截图对比错误")
-            file2.flush()
-
-        else:
-            os.remove(fp1)
-        # n += 1
+                os.remove(fp1)
+            # n += 1
 
     # file.close()
 
@@ -194,3 +242,4 @@ def web_test():
 
 if __name__ == '__main__':
     web_test()
+

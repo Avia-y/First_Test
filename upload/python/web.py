@@ -3,6 +3,8 @@
 # 运行完成后，结果会保存到res.txt中
 #
 import os
+import sys
+
 import xlrd
 import time
 import math
@@ -58,6 +60,37 @@ def del_pic():
         os.remove(file_path)
 
 
+# 登录
+def login(login_bro):
+    # 定位到要右击的元素
+    double_click = login_bro.find_element_by_link_text('登录')
+    double_click.click()
+    time.sleep(5)
+
+    # 登录
+    zh = login_bro.find_element_by_class_name("el-input__inner")
+    account = input("请输入账号：")
+    zh.send_keys(account)
+
+    pwd = login_bro.find_element_by_xpath("//*[@id=\"app\"]/div/div[2]/div/div[2]/div[2]/div[1]/div/div[3]/input")
+    password = input("请输入密码：")
+    pwd.send_keys(password)
+
+    login_button = login_bro.find_element_by_xpath("//*[@id=\"app\"]/div/div[2]/div/div[2]/div[2]/div[1]/div/button[1]")
+    login_button.click()
+    time.sleep(3)
+    f1 = 'E:\web\c\c0.png'
+    f2 = 'E:\web\log\c0.png'
+    login_bro.save_screenshot(f1)
+    r = pil_image_similarity(f1, f2)
+    # print('登录成功')
+    if r < 5000:
+        logging.info("登录成功")
+    else:
+        logging.error("登录失败")
+        sys.exit(0)
+
+
 def web_test():
     logging.basicConfig(format='%(asctime)s - %(pathname)s[line:%(lineno)d] - %(levelname)s: %(message)s',
                         level=logging.INFO)
@@ -70,23 +103,8 @@ def web_test():
     browser.maximize_window()
     browser.get('https://cloud.chaojidun.com/home')
 
-    # 定位到要右击的元素
-    double_click = browser.find_element_by_link_text('登录')
-    double_click.click()
-    time.sleep(5)
-
-    # 登录
-    zh = browser.find_element_by_class_name("el-input__inner")
-    zh.send_keys("15958026448")
-
-    pwd = browser.find_element_by_xpath("//*[@id=\"app\"]/div/div[2]/div/div[2]/div[2]/div[1]/div/div[3]/input")
-    pwd.send_keys("123456zwy")
-
-    login_button = browser.find_element_by_xpath("//*[@id=\"app\"]/div/div[2]/div/div[2]/div[2]/div[1]/div/button[1]")
-    login_button.click()
-    # print('登录成功')
-    logging.info("登录成功")
-
+    # 登录账号
+    login(browser)
     time.sleep(5)
 
     # 点开产品与服务

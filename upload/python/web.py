@@ -1,23 +1,22 @@
 # 使用前，请创建web文件夹
-# 并在web文件夹内，创建url.excel、res.txt、c\log文件夹
+# 并在web文件夹内，创建url.excel、res.txt、c1\log文件夹
 # 点击web.exe文件
 # 运行完成后，结果会保存到res.txt中
 #
+import getpass
+import logging
+import math
+import msvcrt
+import operator
 import os
 import shutil
 import sys
+import time
+from functools import reduce
 
 import xlrd
-import time
-import math
-import operator
-import logging
-import getpass
-import msvcrt
-
-from functools import reduce
-from selenium import webdriver
 from PIL import Image
+from selenium import webdriver
 
 
 # 图片对比
@@ -35,7 +34,7 @@ def pil_image_similarity(filepath1, filepath2):
 
 
 # 新窗口访问内嵌页
-def open_url(t_browser, test_url, num):
+def open_url(t_browser, test_url, num, ts):
     handle = t_browser.current_window_handle
     # 打开一个新的窗口
     t_browser.execute_script('window.open()')
@@ -50,7 +49,7 @@ def open_url(t_browser, test_url, num):
 
     t_browser.get(test_url)
     time.sleep(12)
-    t_browser.save_screenshot('.\c\c%d.png' % num)
+    t_browser.save_screenshot('.\c%d\c%d.png' % (ts, num))
     t_browser.close()
     t_browser.switch_to.window(handles[0])
     return t_browser
@@ -111,10 +110,11 @@ def login(login_bro):
 
     login_button = login_bro.find_element_by_xpath("//*[@id=\"app\"]/div/div[2]/div/div[2]/div[2]/div[1]/div/button[1]")
     login_button.click()
-    time.sleep(3)
-    f1 = '.\c\c0.png'
+    time.sleep(5)
+    f1 = '.\c1\c0.png'
     f2 = '.\log\c0.png'
     login_bro.save_screenshot(f1)
+
     if os.path.exists(f2) is True:
         r = pil_image_similarity(f1, f2)
         # print('登录成功')
@@ -131,7 +131,7 @@ def login(login_bro):
 def first_time(f_brow):
     logging.info("开始第一次循环，获取log")
     src = '.\log'
-    port = '.\c'
+    port = '.\c1'
     # 截图登录成功页
     f_brow.save_screenshot(port+'\c0.png')
     # 打开excel
@@ -165,7 +165,7 @@ def first_time(f_brow):
             shutil.copy(full_file_name, src)
 
     # 清空c文件夹
-    del_pic('.\c')
+    del_pic('.\c1')
 
 
 def web_test():
@@ -210,14 +210,20 @@ def web_test():
     sht = excel.sheets()[0]
     mod = sht.cell(1, 1).value  # 产品名称
 
-    # 清空c文件夹
-    del_pic('.\c')
-
     times = int(input('请输入循环次数（0为获取log图片）：'))
     if times == 0:
         first_time(browser)
 
     for t in range(times):
+        if not os.path.exists("./c%d" % (t+1)):
+            os.makedirs("./c%d" % (t+1))
+
+        # 清空c文件夹
+        del_pic('.\c%d' % (t+1))
+
+        file2.write("第%d轮：\n" % (t+1))
+        file2.flush()
+
         # 遍历url列表
         # for url in f:
         for n in range(1, sht.nrows):
@@ -227,11 +233,11 @@ def web_test():
             if sht.cell(n, 1).value != '':
                 mod = sht.cell(n, 1).value
 
-            logging.info("目前产品为：" + mod + "-" + part)
+            logging.info("第" + str(t+1) + "轮 第" + str(n) + "个 目前产品为：" + mod + "-" + part)
             time.sleep(1)
             print(url)
 
-            browser = open_url(browser, url, n)
+            browser = open_url(browser, url, n, t+1)
             time.sleep(1)
 
             if url == 'https://www.aliyun.com/?e=1101':
@@ -243,7 +249,7 @@ def web_test():
             else:
 
                 # 对比网页图片是否异常
-                fp1 = ".\c\c" + str(n) + ".png"
+                fp1 = ".\c"+str(t+1)+"\c" + str(n) + ".png"
                 fp2 = ".\log\c" + str(n) + ".png"
                 res = pil_image_similarity(fp1, fp2)
                 # 输出差异值

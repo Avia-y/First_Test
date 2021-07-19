@@ -151,7 +151,7 @@ def first_time(f_brow):
         time.sleep(1)
         print(url)
 
-        f_brow = open_url(f_brow, url, n)
+        f_brow = open_url(f_brow, url, n, 1)
         time.sleep(1)
 
     # 清空log文件夹

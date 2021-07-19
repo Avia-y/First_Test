@@ -1,5 +1,6 @@
 # 使用前，请创建web文件夹
 # 并在web文件夹内，创建url.excel、res.txt、c1\log文件夹
+# 将web文件夹中的chrome插件添加到环境目录下
 # 点击web.exe文件
 # 运行完成后，结果会保存到res.txt中
 #

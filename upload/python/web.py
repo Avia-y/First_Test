@@ -114,6 +114,7 @@ def login(login_bro):
     f1 = '.\c1\c0.png'
     f2 = '.\log\c0.png'
     login_bro.save_screenshot(f1)
+    time.sleep(1)
 
     if os.path.exists(f2) is True:
         r = pil_image_similarity(f1, f2)
@@ -147,7 +148,7 @@ def first_time(f_brow):
 
         if sht.cell(n, 1).value != '':
             mod = sht.cell(n, 1).value
-        logging.info("目前产品为：" + mod + "-" + part)
+        logging.info("第" + str(t+1) + "轮 第" + str(n) + "个 目前产品为：" + mod + "-" + part)
         time.sleep(1)
         print(url)
 
